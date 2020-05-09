@@ -32,6 +32,70 @@ class _HomeState extends State<Home> {
 
   final services = UserServices();
 
+  void showBottomModal(BuildContext ctx, String id, String name, int age) {
+    final TextEditingController _updateNameController = TextEditingController();
+
+    final TextEditingController _updateAgeController = TextEditingController();
+    _updateNameController.text = name;
+    _updateAgeController.text = age.toString();
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return Container(
+            padding: EdgeInsets.only(
+                top: 10,
+                left: 10,
+                right: 10,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 10),
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 30, left: 20, right: 20),
+                    child: TextField(
+                      controller: _updateNameController,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(), labelText: 'Name'),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    child: TextField(
+                      controller: _updateAgeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(), labelText: 'Age'),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 20, left: 20, right: 20),
+                    child: RaisedButton.icon(
+                      color: Colors.black,
+                      onPressed: () {
+                        setState(() {
+                          services.updateUser(
+                              id,
+                              _updateNameController.text,
+                              int.parse(
+                                _updateAgeController.text,
+                              ));
+                        });
+                        Navigator.of(ctx).pop();
+                      },
+                      icon: Icon(Icons.add),
+                      label: Text('Save User'),
+                    ),
+                  ),
+                ],
+              ),
+            ));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,6 +132,8 @@ class _HomeState extends State<Home> {
                     services.saveUser(
                         _nameController.text, int.parse(_ageController.text));
                   });
+                  _nameController.clear();
+                  _ageController.clear();
                 },
                 icon: Icon(Icons.add),
                 label: Text('Add User'),
@@ -91,6 +157,28 @@ class _HomeState extends State<Home> {
                           child: ListTile(
                             title: Text('${users[idx].name}'),
                             subtitle: Text('${users[idx].age}'),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    setState(() {
+                                      services.deleteUser(users[idx].id);
+                                    });
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () => showBottomModal(
+                                    context,
+                                    users[idx].id,
+                                    users[idx].name,
+                                    users[idx].age,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       });

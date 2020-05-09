@@ -15,4 +15,13 @@ class UserServices {
             User(id: item['id'], name: item['name'], age: item['age']))
         .toList();
   }
+
+  void deleteUser(String id) {
+    DBHelper.deleteData('users', id);
+  }
+
+  void updateUser(String id, String name, int age) {
+    DBHelper.updateData('users', id,
+        {'id': DateTime.now().toString(), 'name': name, 'age': age});
+  }
 }
